@@ -260,12 +260,12 @@
   <p class="section-sub reveal">some chapters end &mdash; the good ones just keep playing</p>
   <div class="player-wrap reveal">
     <div class="player"><div id="yt"></div></div>
-    <div class="now"><div class="eq"><i></i><i></i><i></i><i></i></div>See You Again &mdash; Wiz Khalifa ft. Charlie Puth</div>
+    <div class="now"><div class="eq"><i></i><i></i><i></i><i></i></div>Where'd All the Time Go? &mdash; Dr. Dog</div>
   </div>
   <button class="play-btn" id="playBtn">▶ Play our song</button>
   <div class="goodbye reveal">
     <div class="big">Thank you, Ma'am Sarah</div>
-    <p>It's been a long day without you, my friend&hellip; and we'll tell you all about it when we see you again.</p>
+    <p>Where'd all the time go? Into every lesson, every laugh, and every memory we'll keep with us.</p>
   </div>
 </section>
 <footer>MADE WITH LOVE BY CLASS 26B4 &nbsp;·&nbsp; TEACHERS' DAY 2026</footer>
@@ -719,13 +719,13 @@ async function downloadCertificate(btn) {
 }
 document.querySelectorAll('[data-download]').forEach(b => b.addEventListener('click', () => downloadCertificate(b)));
 
-/* ---------- the song: plays from 0:17 when you reach the end ---------- */
-const SONG_START = 17;
+/* ---------- the song: plays when you reach the end ---------- */
+const SONG_START = 0;
 let player, ytReady = false, wantPlay = false, songStarted = false;
 const playBtn = document.getElementById('playBtn');
 function onYouTubeIframeAPIReady() {
   player = new YT.Player('yt', {
-    videoId: 'NDEWXnMRq3c',
+    videoId: 'diw5PVWw5_E',
     playerVars: { playsinline: 1, rel: 0, start: SONG_START },
     events: {
       onReady: () => { ytReady = true; if (wantPlay) playSong(); },
