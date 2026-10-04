@@ -622,7 +622,7 @@ function onceInView(id, fn) {
   io.observe(document.getElementById(id));
 }
 onceInView('noteTrigger', () => setTimeout(() => openModal('noteModal'), 400));
-onceInView('awardTrigger', () => setTimeout(() => openModal('awardModal', true), 400));
+onceInView('awardTrigger', () => setTimeout(() => { openModal('awardModal', true); playSong(); }, 400));
 
 function confettiBurst() {
   const cols = ['#c98a8a','#d4b483','#6f8fb5','#a0c4ff','#ffc6ff','#caffbf'];
@@ -717,10 +717,14 @@ async function downloadCertificate(btn) {
     btn.disabled = false;
   }, 'image/png');
 }
-document.querySelectorAll('[data-download]').forEach(b => b.addEventListener('click', () => downloadCertificate(b)));
+document.querySelectorAll('[data-download]').forEach(b => b.addEventListener('click', () => {
+  downloadCertificate(b);
+  // if the phone blocked the song earlier, this tap is a second chance to start it
+  if (ytReady && player.getPlayerState() !== YT.PlayerState.PLAYING) playSong();
+}));
 
-/* ---------- the song: plays when you reach the end ---------- */
-const SONG_START = 0;
+/* ---------- the song: starts with the certificate and plays on to the end ---------- */
+const SONG_START = 25;
 let player, ytReady = false, wantPlay = false, songStarted = false;
 const playBtn = document.getElementById('playBtn');
 function onYouTubeIframeAPIReady() {
@@ -747,7 +751,7 @@ function playSong() {
 }
 playBtn.addEventListener('click', playSong);
 new IntersectionObserver(([en], io) => {
-  if (en.isIntersecting) { io.disconnect(); playSong(); }
+  if (en.isIntersecting) { io.disconnect(); if (!songStarted) playSong(); }
 }, { threshold: .5 }).observe(document.querySelector('#finale .player-wrap'));
 </script>
 <script src="https://www.youtube.com/iframe_api"></script>
