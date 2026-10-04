@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Happy Teachers' Day, Ma'am Sarah</title>
 <meta name="description" content="A small token of appreciation for Ma'am Sarah, from her students.">
+<!-- YouTube refuses embeds that arrive without a referrer (Error 153) -->
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Great+Vibes&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
@@ -135,12 +137,12 @@
   footer{padding:28px 16px 36px;text-align:center;font-size:1rem;letter-spacing:.12em;color:rgba(238,243,251,.55);background:#08121f}
 
   /* ---------- popups ---------- */
-  .modal{position:fixed;inset:0;z-index:40;display:grid;place-items:center;padding:16px;background:rgba(14,20,48,.55);backdrop-filter:blur(4px);
+  .modal{position:fixed;inset:0;z-index:40;display:flex;overflow-y:auto;overscroll-behavior:contain;padding:16px;background:rgba(14,20,48,.55);backdrop-filter:blur(4px);
     opacity:0;visibility:hidden;transition:opacity .5s ease,visibility .5s}
   .modal.open{opacity:1;visibility:visible}
-  .modal-card{position:relative;max-width:460px;width:100%;transform:scale(.85) rotate(-2deg);transition:transform .6s cubic-bezier(.2,1.4,.4,1)}
+  .modal-card{position:relative;max-width:460px;width:100%;margin:auto;transform:scale(.85) rotate(-2deg);transition:transform .6s cubic-bezier(.2,1.4,.4,1)}
   .modal.open .modal-card{transform:scale(1) rotate(0)}
-  .close{position:absolute;top:10px;right:12px;width:36px;height:36px;border-radius:50%;border:0;background:rgba(58,51,70,.08);color:var(--ink);
+  .close{position:absolute;top:8px;right:8px;width:44px;height:44px;border-radius:50%;border:0;background:rgba(58,51,70,.08);color:var(--ink);
     font-size:1.3rem;cursor:pointer;z-index:2}
   .note{background:#fff8e8;padding:44px 34px 36px;box-shadow:0 30px 70px -10px rgba(0,0,0,.5);text-align:center;
     background-image:repeating-linear-gradient(transparent 0 33px,#efe3c8 33px 34px)}
@@ -161,6 +163,18 @@
   .dl-btn:disabled{opacity:.6;cursor:wait}
   .paper p.sorry{background:rgba(201,138,138,.08);border-left:3px solid var(--rose);padding:0 0 0 18px;margin-left:-21px}
   .gate-from{margin-top:6px;font-family:var(--hand);font-size:1.4rem;opacity:.8}
+  .keep{display:block;margin:18px auto 0;font:inherit;font-size:1rem;letter-spacing:.08em;color:var(--ink-soft);background:none;
+    border:1px solid rgba(58,51,70,.2);border-radius:999px;padding:9px 20px;cursor:pointer}
+  @media (max-width:500px){
+    .note{padding:40px 20px 26px}
+    .note h2{font-size:2.6rem}
+    .note p{font-size:1.35rem;line-height:30px}
+    .award{padding:40px 20px 26px}
+    .award .ribbon{font-size:2rem}
+    .award h2{font-size:1.5rem;margin-bottom:8px}
+    .award .to{font-size:2.5rem}
+    .award p{font-size:1.05rem;line-height:1.5}
+  }
   #soundBtn{position:fixed;right:16px;bottom:16px;z-index:30;width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.25);
     background:rgba(14,20,48,.6);backdrop-filter:blur(6px);color:#fbf4e8;font-size:1.25rem;cursor:pointer;display:none}
   #soundBtn.show{display:block}
@@ -277,6 +291,7 @@
     <button class="close" aria-label="Close">×</button>
     <h2>Thank You</h2>
     <p>For every lesson, every red-ink circle, every laugh, and every time you believed in us before we believed in ourselves. We'll carry it with us long after the last bell rings. ♡</p>
+    <button class="keep" data-close>keep scrolling ↓</button>
   </div>
 </div>
 <div class="modal" id="awardModal" role="dialog" aria-modal="true" aria-label="Certificate of appreciation">
@@ -290,6 +305,7 @@
     <p>For teaching us English &mdash; and so much more than English. For patience beyond measure, kindness without condition, and for being the teacher we will always remember.</p>
     <div class="from">with love, from Class 26B4</div>
     <button class="dl-btn" data-download>⬇ Download certificate</button>
+    <button class="keep" data-close>keep scrolling ↓</button>
   </div>
 </div>
 
@@ -608,12 +624,13 @@ document.querySelectorAll('.reveal').forEach(el => revealer.observe(el));
 
 /* ---------- popups ---------- */
 function openModal(id, withConfetti) {
+  document.querySelectorAll('.modal.open').forEach(m => m.classList.remove('open'));
   document.getElementById(id).classList.add('open');
   if (withConfetti) confettiBurst();
 }
 document.querySelectorAll('.modal').forEach(m => {
   const close = () => m.classList.remove('open');
-  m.querySelector('.close').addEventListener('click', close);
+  m.querySelectorAll('.close, [data-close]').forEach(b => b.addEventListener('click', close));
   m.addEventListener('click', e => { if (e.target === m) close(); });
   addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
 });
