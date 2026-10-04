@@ -330,7 +330,7 @@ const pick = a => a[Math.random() * a.length | 0];
 
 /* ---------- sound: everything is synthesised, no audio files ---------- */
 const sfx = (() => {
-  let ac, master, echo, noise, on = true;
+  let ac, master, echo, noise, tuneBus, on = true;
 
   function init() {
     if (ac) return ac.resume();
@@ -411,7 +411,8 @@ const sfx = (() => {
 
   // an original little music-box waltz for the opening
   function note(midi, t, vol, len) {
-    const f = 440 * 2 ** ((midi - 69) / 12), g = out(0, .35);
+    const f = 440 * 2 ** ((midi - 69) / 12), g = ac.createGain();
+    g.connect(tuneBus);
     env(g, t, vol, .006, len);
     for (const [h, a] of [[1, 1], [2, .35], [4.2, .07]]) {
       const o = ac.createOscillator(), og = ac.createGain();
@@ -421,6 +422,7 @@ const sfx = (() => {
   }
   function tune() {
     if (!ac) return;
+    tuneBus = out(0, .35);
     const beat = .5, t0 = ac.currentTime + .3;
     const melody = [[76,1],[79,1],[84,1],[83,2],[79,1],[81,1],[84,1],[88,1],[86,2],[84,1],
       [81,1],[84,1],[89,1],[88,1],[86,1],[84,1],[83,1],[86,1],[79,1],[81,1],[83,1],[86,1],
@@ -437,7 +439,14 @@ const sfx = (() => {
     if (master) master.gain.setTargetAtTime(on ? .75 : 0, ac.currentTime, .05);
     return on;
   }
-  return { init, launch, boom, crackle, tune, toggle };
+  // fade the opening tune so it never plays over the song
+  function fadeTune(sec) {
+    if (!tuneBus) return;
+    const t = ac.currentTime;
+    tuneBus.gain.setValueAtTime(tuneBus.gain.value, t);
+    tuneBus.gain.linearRampToValueAtTime(0, t + sec);
+  }
+  return { init, launch, boom, crackle, tune, fadeTune, toggle };
 })();
 
 /* ---------- fireworks ---------- */
@@ -639,7 +648,7 @@ function onceInView(id, fn) {
   io.observe(document.getElementById(id));
 }
 onceInView('noteTrigger', () => setTimeout(() => openModal('noteModal'), 400));
-onceInView('awardTrigger', () => setTimeout(() => { openModal('awardModal', true); playSong(); }, 400));
+onceInView('awardTrigger', () => setTimeout(() => { openModal('awardModal', true); playSong(); sfx.fadeTune(6); }, 400));
 
 function confettiBurst() {
   const cols = ['#c98a8a','#d4b483','#6f8fb5','#a0c4ff','#ffc6ff','#caffbf'];
